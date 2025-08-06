@@ -5,8 +5,8 @@ DOTFILES_DIR="$(realpath -- "$ZSHRC_DIR/..")"
 [[ -f "$DOTFILES_DIR/.config" ]] && source "$DOTFILES_DIR/.config"
 
 # Source all .zsh files in the same directory, excluding .zshrc
-for file in "$ZSHRC_DIR"/*.zsh(.N); do
-  [[ "$file" != "$ZSHRC_DIR/.zshrc" ]] && source "$file"
+for file in "$ZSHRC_DIR"/.zsh-includes/*.zsh(.N); do
+  [[ "$file" != "$ZSHRC_DIR/.zsh-includes/.zshrc" ]] && source "$file"
 done
 
 # p10k
