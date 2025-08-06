@@ -1,0 +1,2 @@
+xport CURRENT_CLIENT="something"
+export CLIENT_ROOT="$HOME/$CURRENT_CLIENT"
