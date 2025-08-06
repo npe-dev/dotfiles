@@ -18,5 +18,7 @@ git clone git@github.com:npe-dev/dotfiles.git ~/dotfiles
 ```
 
 # Working with stow
-
-stow -D zsh # Unstow zsh
+## Activate symlink
+stow -t ~ zsh
+# Delete exist
+stow -D -t ~ zsh
