@@ -1,0 +1,3 @@
+export CURRENT_CLIENT="Something"
+export CURRENT_APP="something"
+export CLIENT_ROOT="$HOME/$CURRENT_CLIENT"
