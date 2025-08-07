@@ -17,8 +17,13 @@ git clone git@github.com:npe-dev/dotfiles.git ~/dotfiles
 ~/dotfiles/setup.sh
 ```
 
-# Working with stow
-## Activate symlink
+### Working with stow
+#### Activate symlink
 stow -t ~ zsh
 # Delete exist
 stow -D -t ~ zsh
+
+
+### AWS cli not working well with stow for now manually symlink the aws directory
+#### TODO: include that actions in 
+ln -s $HOME/Projects/dotfiles/aws .aws
