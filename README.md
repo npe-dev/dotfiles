@@ -23,3 +23,8 @@ stow -t ~ zsh aws
 
 # Delete exist
 stow -D -t ~ zsh
+
+
+
+### ZHR
+theme -> https://github.com/MartinSeeler/iterm2-material-design?tab=readme-ov-file
