@@ -1,0 +1,67 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+
+# Inserts a blank line between shell prompts
+add_newline = false # idk what is this it was true
+
+# Right side modules
+right_format = """
+$kubernetes | $aws
+"""
+
+# Replace the '❯' symbol in the prompt with '➜'
+[character] # The name of the module we are configuring is 'character'
+success_symbol = '[➜](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
+
+# =========================
+# KUBERNETES MODULE
+# =========================
+[kubernetes]
+disabled = false
+symbol = "☸️"
+# Include the symbol in the format
+format = ' $symbol[$context(\($namespace\))]($style)'
+style = "red"
+
+# =========================
+# AWS MODULE
+# =========================
+[aws]
+disabled = false
+symbol = ""
+# Remove region from display
+format = '[$symbol($profile )]($style)'
+style = "bold blue"
+
+# Optional aliases
+[aws.region_aliases]
+ap-southeast-2 = 'au'
+us-east-1 = 'va'
+
+[aws.profile_aliases]
+CompanyGroupFrobozzOnCallAccess = 'Frobozz'
+
+[git_branch]
+symbol = '🌱 '
+truncation_length = 4
+truncation_symbol = ''
+
+[git_status]
+conflicted = '🏳'
+ahead = '🏎💨'
+behind = '😰'
+diverged = '😵'
+up_to_date = '✓'
+untracked = '🤷'
+stashed = '📦'
+modified = '📝'
+staged = '[++\($count\)](green)'
+renamed = '👅'
+deleted = '🗑'
+
+[directory]
+truncation_length = 3       # show only last 3 path components
+truncation_symbol = "…"
+truncate_to_repo = false
+read_only = " "
