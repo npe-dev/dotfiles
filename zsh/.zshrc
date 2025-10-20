@@ -55,7 +55,8 @@ export PATH="/opt/homebrew/opt/mysql/bin:$PATH"
 export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
 export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH
 export PATH="/usr/local/bin:$PATH"
-
-
-
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+export GEM_HOME="$HOME/.gem"
+export PATH="$GEM_HOME/bin:$PATH"
+export PATH="$PATH:/Users/npe/.gem/bin"
 

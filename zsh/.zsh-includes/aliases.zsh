@@ -1,6 +1,7 @@
 # Aliases
+echo "JH"
 alias ohmy="code ~/.zshrc"
-alias ll="colorls -la"
+alias lls="colorls -la"
 #alias ls="colorls"
 
 alias hints_display='vim $HOME/Dropbox/$CURRENT_CLIENT/hints.md'
