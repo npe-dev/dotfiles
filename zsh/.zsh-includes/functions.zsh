@@ -14,6 +14,21 @@ bf () {
     echo "(Copied to clipboard)"
 }
 
+obf () {
+    if [[ -n "$1" ]]; then
+        input="$1"
+    else
+        printf "Enter the string to encode: "
+        read -s input
+        echo
+    fi
+
+    encoded=$(echo -n "$input" | base64)
+    echo "$encoded"
+    echo -n "$encoded" | pbcopy
+    echo "(Copied to clipboard)"
+}
+
 unobf () {
     if [[ -n "$1" ]]; then
         input="$1"
@@ -40,7 +55,6 @@ pstan() {
     vendor/bin/phpstan analyse --memory-limit=-1 "$1"
 }
 
-# Checkout branch by ticket identifier
 cc() {
     gto
     git fetch
