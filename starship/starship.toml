@@ -5,14 +5,15 @@
 # Inserts a blank line between shell prompts
 add_newline = false # idk what is this it was true
 
-# Right side modules
-right_format = """
-$kubernetes | $aws
-"""
+# Custom format with kubernetes and aws on the left
+format = """
+[┌─](bold green)$kubernetes$aws
+[└─](bold green)$directory$git_branch$git_status
+$character"""
 
 # Replace the '❯' symbol in the prompt with '➜'
 [character] # The name of the module we are configuring is 'character'
-success_symbol = '[➜](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
+success_symbol = '[➜](bold green) ' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
 
 # =========================
 # KUBERNETES MODULE
@@ -21,7 +22,7 @@ success_symbol = '[➜](bold green)' # The 'success_symbol' segment is being set
 disabled = false
 symbol = "☸️"
 # Include the symbol in the format
-format = ' $symbol[$context(\($namespace\))]($style)'
+format = ' $symbol[$context]($style)[\($namespace\)](bold yellow)'
 style = "red"
 
 # =========================
@@ -43,22 +44,22 @@ us-east-1 = 'va'
 CompanyGroupFrobozzOnCallAccess = 'Frobozz'
 
 [git_branch]
-symbol = '🌱 '
-truncation_length = 4
-truncation_symbol = ''
+symbol = 'on '
+truncation_length = 50
+truncation_symbol = '...'
 
 [git_status]
-conflicted = '🏳'
-ahead = '🏎💨'
-behind = '😰'
-diverged = '😵'
+conflicted = '!'
+ahead = '⇡'
+behind = '⇣'
+diverged = '⇕'
 up_to_date = '✓'
-untracked = '🤷'
-stashed = '📦'
-modified = '📝'
-staged = '[++\($count\)](green)'
-renamed = '👅'
-deleted = '🗑'
+untracked = '?'
+stashed = '$$'
+modified = '*'
+staged = '+'
+renamed = '»'
+deleted = '✘'
 
 [directory]
 truncation_length = 3       # show only last 3 path components

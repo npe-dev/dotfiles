@@ -40,10 +40,10 @@ info "Setting up Zsh..."
 source "$HOME/dotfiles/zsh/setup/zsh.sh"
 echo
 
-## Install Homebrew and packages/apps
-#title "🫖 Setting up Homebrew..."
-#$HOME/dotfiles/setup/brew.sh
-#echo
+# Install Homebrew and packages/apps
+info "🫖 Setting up Homebrew..."
+source "$HOME/dotfiles/setup/brew.sh"
+echo
 
 
 ### Another way to setup dotfiles

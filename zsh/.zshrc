@@ -28,8 +28,7 @@ CASE_SENSITIVE="false" # I think it was false before
 # COMPLETION_WAITING_DOTS="true"
 
 # Plugins
-plugins=(git sudo kubectl fzf-tab zsh-autosuggestions) #
-
+plugins=(git sudo kubectl zsh-autosuggestions)
 source $ZSH/oh-my-zsh.sh
 eval "$(starship init zsh)"
 
@@ -37,15 +36,17 @@ zstyle ':omz:update' mode auto
 # zstyle ':fzf-tab:*' complete-with-space false
 
 # Restore normal Tab behavior
-bindkey '^I' expand-or-complete
+#bindkey '^I' expand-or-complete
 # Trigger fzf-tab only on Shift+Tab
-bindkey '^[Z' fzf-tab-complete
+#bindkey '^[Z' fzf-tab-complete
 
 
 if command -v zoxide &>/dev/null; then
 #   eval "$(zoxide init --cmd cd zsh)"
   eval "$(zoxide init zsh)"
 fi
+
+eval "$(fzf --zsh)"
 
 # EXPORTS
 export KUBECONFIG=~/.kube/config
