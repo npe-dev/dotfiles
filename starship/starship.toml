@@ -24,6 +24,7 @@ symbol = "☸️"
 # Include the symbol in the format
 format = ' $symbol[$context]($style)[\($namespace\)](bold yellow)'
 style = "red"
+detect_files = ['.show-k8s-context']
 
 # =========================
 # AWS MODULE
