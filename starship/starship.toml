@@ -45,9 +45,10 @@ us-east-1 = 'va'
 CompanyGroupFrobozzOnCallAccess = 'Frobozz'
 
 [git_branch]
-symbol = 'on '
+symbol = ''
 truncation_length = 50
 truncation_symbol = '...'
+format = 'on [$symbol$branch(:$remote_branch)]($style) '
 
 [git_status]
 conflicted = '!'
