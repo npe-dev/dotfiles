@@ -7,8 +7,8 @@ add_newline = false # idk what is this it was true
 
 # Custom format with kubernetes and aws on the left
 format = """
-[┌─](bold green)$kubernetes$aws$cmd_duration
-[└─](bold green)$directory$git_branch$git_status
+$kubernetes$aws$cmd_duration$line_break\
+[└─](bold green)$directory$git_branch$git_status$php$nodejs$python$golang$rust$java
 $character"""
 
 # Replace the '❯' symbol in the prompt with '➜'
@@ -20,11 +20,12 @@ success_symbol = '[➜](bold green) ' # The 'success_symbol' segment is being se
 # =========================
 [kubernetes]
 disabled = false
-symbol = "☸️"
-# Include the symbol in the format
-format = ' $symbol[$context]($style)[\($namespace\)](bold yellow)'
+symbol = "☸️ "
+# Show context, namespace, and user
+format = '[┌─](bold green)$symbol[$context]($style)[\($namespace\)](bold yellow) '
 style = "red"
-detect_files = ['.show-k8s-context']
+# Only show when aws-vault session is active
+detect_env_vars = ['AWS_VAULT']
 
 # =========================
 # AWS MODULE
@@ -76,3 +77,30 @@ truncation_length = 3       # show only last 3 path components
 truncation_symbol = "…"
 truncate_to_repo = false
 read_only = " "
+
+# =========================
+# LANGUAGE VERSION MODULES
+# =========================
+[php]
+symbol = "🐘 "
+format = ' via [$symbol($version)]($style)'
+
+[nodejs]
+symbol = "⬢ "
+format = ' via [$symbol($version)]($style)'
+
+[python]
+symbol = "🐍 "
+format = ' via [$symbol($version)]($style)'
+
+[golang]
+symbol = "🐹 "
+format = ' via [$symbol($version)]($style)'
+
+[rust]
+symbol = "🦀 "
+format = ' via [$symbol($version)]($style)'
+
+[java]
+symbol = "☕ "
+format = ' via [$symbol($version)]($style)'
