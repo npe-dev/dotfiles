@@ -74,10 +74,86 @@ cc() {
     git checkout "$branch_name"
 }
 
+yml-validation() {
+    export DEPLOYMENT=test
+    export NAMESPACE=default
+    export GO_PIPELINE_LABEL=latest
+    export BACK_LARAVEL_WORKER_REPLICA_COUNT=1
+    export BACK_LARAVEL_API_REPLICA_COUNT=1
+    export FRONT_REPLICA_COUNT=1
+    export CPU_LIMIT=100m
+    export MEMORY_LIMIT=128Mi
+    export CPU_REQUEST=50m
+    export MEMORY_REQUEST=64Mi
+
+    if [[ -z "$1" ]]; then
+      echo "Usage: k8s-validate <file.yml> [file2.yml] ..."
+      echo "       k8s-validate -d <directory>"
+      return 1
+    fi
+
+    local ERRORS=0
+    local FILES=()
+
+    # Build file list if -d option is used
+    if [[ "$1" == "-d" ]]; then
+      if [[ -z "$2" ]]; then
+        echo "Error: Directory path required after -d"
+        return 1
+      fi
+
+      if [[ ! -d "$2" ]]; then
+        echo "Error: Directory not found: $2"
+        return 1
+      fi
+
+      # Find all yaml/yml files recursively
+      while IFS= read -r -d '' file; do
+        FILES+=("$file")
+      done < <(find "$2" -type f \( -name "*.yml" -o -name "*.yaml" \) -print0)
+
+      if [[ ${#FILES[@]} -eq 0 ]]; then
+        echo "No YAML files found in: $2"
+        return 1
+      fi
+
+      echo "Found ${#FILES[@]} YAML files in $2"
+      echo "-----------------------------------"
+    else
+      FILES=("$@")
+    fi
+
+    for FILE in "${FILES[@]}"; do
+      if [[ ! -f "$FILE" ]]; then
+        echo "\033[0;31m✗\033[0m File not found: $FILE"
+        ERRORS=$((ERRORS + 1))
+        continue
+      fi
+
+      RENDERED=$(sed 's/{{\([^}]*\)}}/${\1}/g' "$FILE" | envsubst)
+
+      if echo "$RENDERED" | kubeconform -strict -summary 2>&1; then
+        echo "\033[0;32m✓\033[0m $FILE"
+      else
+        echo "\033[0;31m✗\033[0m $FILE"
+        ERRORS=$((ERRORS + 1))
+      fi
+    done
+
+    echo "-----------------------------------"
+    if [[ $ERRORS -eq 0 ]]; then
+      echo "\033[0;32mAll files valid!\033[0m"
+    else
+      echo "\033[0;31m$ERRORS file(s) failed validation\033[0m"
+    fi
+
+    return $ERRORS
+}
+
 purgeCache() {
     gto
     rm -rf tmp/cache/twig/*
-    rm -rf tmp/cache/mustache/* 
+    rm -rf tmp/cache/mustache/*
     rm -rf tmp/cache/translator/*
     cd -
 }
