@@ -157,3 +157,52 @@ purgeCache() {
     rm -rf tmp/cache/translator/*
     cd -
 }
+
+check_aws_credentials() {
+    if [[ -n "$AWS_VAULT" ]]; then
+        if ! aws sts get-caller-identity &>/dev/null; then
+            echo "⚠️  AWS credentials expired. Unsetting AWS_VAULT..."
+            unset AWS_VAULT
+            unset AWS_REGION
+            unset AWS_DEFAULT_REGION
+            unset AWS_ACCESS_KEY_ID
+            unset AWS_SECRET_ACCESS_KEY
+            unset AWS_SESSION_TOKEN
+            unset AWS_SECURITY_TOKEN
+            unset AWS_CREDENTIAL_EXPIRATION
+            return 1
+        fi
+    fi
+    return 0
+}
+
+aws-vault() {
+    if [[ "$1" == "exec" ]]; then
+        local new_profile="$2"
+
+        # If AWS_VAULT is already set and trying to switch to different profile
+        if [[ -n "$AWS_VAULT" && "$AWS_VAULT" != "$new_profile" ]]; then
+            echo "🔄 Switching from $AWS_VAULT to $new_profile..."
+            unset AWS_VAULT
+            unset AWS_REGION
+            unset AWS_DEFAULT_REGION
+            unset AWS_ACCESS_KEY_ID
+            unset AWS_SECRET_ACCESS_KEY
+            unset AWS_SESSION_TOKEN
+            unset AWS_SECURITY_TOKEN
+            unset AWS_CREDENTIAL_EXPIRATION
+        elif [[ -n "$AWS_VAULT" && "$AWS_VAULT" == "$new_profile" ]]; then
+            echo "⚠️  Already in $AWS_VAULT context. Refreshing..."
+            unset AWS_VAULT
+            unset AWS_REGION
+            unset AWS_DEFAULT_REGION
+            unset AWS_ACCESS_KEY_ID
+            unset AWS_SECRET_ACCESS_KEY
+            unset AWS_SESSION_TOKEN
+            unset AWS_SECURITY_TOKEN
+            unset AWS_CREDENTIAL_EXPIRATION
+        fi
+    fi
+
+    command aws-vault "$@"
+}
