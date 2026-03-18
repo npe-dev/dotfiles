@@ -56,7 +56,6 @@ pstan() {
 }
 
 cc() {
-    gto
     git fetch
     ticket_link="$1"
     ticket_identifier=$(echo "$ticket_link" | sed -E 's/^.*\/([A-Z]+-[0-9]+).*/\1/')
@@ -69,7 +68,7 @@ cc() {
         echo "No branches found containing $ticket_identifier"
         return 1
     fi
-    
+
     echo "Found branch containing $ticket_identifier: $branch_name"
     git checkout "$branch_name"
 }
