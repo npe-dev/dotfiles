@@ -28,9 +28,26 @@ CASE_SENSITIVE="false" # I think it was false before
 # COMPLETION_WAITING_DOTS="true"
 
 # Plugins
-plugins=(git sudo kubectl zsh-autosuggestions)
+plugins=(git sudo zsh-autosuggestions)
 source $ZSH/oh-my-zsh.sh
-eval "$(starship init zsh)"
+# Cache eval outputs for faster startup
+_cache_eval() {
+  local cache_file="$HOME/.zsh-cache/$1"
+  if [[ ! -f "$cache_file" || ! -s "$cache_file" ]]; then
+    mkdir -p "$HOME/.zsh-cache"
+    eval "$2" > "$cache_file"
+  fi
+  source "$cache_file"
+}
+
+_cache_eval "starship.zsh" "starship init zsh"
+
+# Lazy-load kubectl completions (removed from oh-my-zsh plugins for speed)
+kubectl() {
+  unfunction kubectl
+  source <(command kubectl completion zsh)
+  command kubectl "$@"
+}
 
 zstyle ':omz:update' mode auto
 # zstyle ':fzf-tab:*' complete-with-space false
@@ -42,29 +59,40 @@ zstyle ':omz:update' mode auto
 
 
 if command -v zoxide &>/dev/null; then
-#   eval "$(zoxide init --cmd cd zsh)"
-  eval "$(zoxide init zsh)"
+  _cache_eval "zoxide.zsh" "zoxide init zsh"
 fi
 
-eval "$(fzf --zsh)"
+_cache_eval "fzf.zsh" "fzf --zsh"
 
 # EXPORTS
 export KUBECONFIG=~/.kube/config
 export LANG="en_US.UTF-8" # (updated)
 export PHP_CS_FIXER_IGNORE_ENV=1
-export PATH="/opt/homebrew/opt/mysql/bin:$PATH"
-export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
-export PATH=/usr/local/bin:/usr/local/sbin:~/bin:$PATH
-export PATH="/usr/local/bin:$PATH"
-export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 export GEM_HOME="$HOME/.gem"
-export PATH="$GEM_HOME/bin:$PATH"
-export PATH="$PATH:/Users/npe/.gem/bin"
-export PATH="$PATH:/Users/npe/Library/Python/3.9/bin"
-export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
+export PATH="/opt/homebrew/opt/mysql/bin:/opt/homebrew/opt/mysql-client/bin:/opt/homebrew/opt/ruby/bin:$GEM_HOME/bin:/usr/local/bin:/usr/local/sbin:~/bin:${KREW_ROOT:-$HOME/.krew}/bin:$PATH:/Users/npe/.gem/bin:/Users/npe/Library/Python/3.9/bin"
 
+# Lazy-load NVM (speeds up shell startup)
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+lazy_load_nvm() {
+  unset -f nvm node npm npx
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+}
+nvm() { lazy_load_nvm && nvm "$@"; }
+node() { lazy_load_nvm && node "$@"; }
+npm() { lazy_load_nvm && npm "$@"; }
+npx() { lazy_load_nvm && npx "$@"; }
+
+export REPO_LOCATION="/Users/npe/Optimy"
+
+# peon-ping quick controls
+alias peon="bash /Users/npe/.claude/hooks/peon-ping/peon.sh"
+[ -f /Users/npe/.claude/hooks/peon-ping/completions.bash ] && source /Users/npe/.claude/hooks/peon-ping/completions.bash
+
+# Compile zcompdump in background for faster startup
+{
+  zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+  if [[ -s "$zcompdump" && (! -s "${zcompdump}.zwc" || "$zcompdump" -nt "${zcompdump}.zwc") ]]; then
+    zcompile "$zcompdump"
+  fi
+} &!

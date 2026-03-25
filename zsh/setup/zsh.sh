@@ -24,17 +24,13 @@ fi
 plugin_dir="$HOME/dotfiles/zsh/.zsh-plugins"
 fzf_tab_dir="$plugin_dir/fzf-tab"
 
-echo "[*] Cloning zsh plugins..."
+info "Installing fzf-tab plugin..."
 mkdir -p "$plugin_dir"
 
 if [ ! -d "$fzf_tab_dir" ]; then
-    git clone --depth=1 https://github.com/Aloxaf/fzf-tab "$fzf_tab_dir"
+    git clone --depth=1 --quiet https://github.com/Aloxaf/fzf-tab "$fzf_tab_dir" 2>/dev/null
+    success "fzf-tab plugin installed!"
 else
-    echo "[*] fzf-tab already installed at $fzf_tab_dir"
+    success "fzf-tab already installed"
 fi
-#
-#echo "[*] Linking dotfiles with stow..."
-#cd ~/dotfiles
-#stow zsh
-
-echo "[*] Done! Start a new shell to use your config."
+success "Zsh setup complete!"

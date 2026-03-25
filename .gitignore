@@ -1,3 +1,4 @@
 config
 .idea
 aws/cli/
+zsh/.zsh-plugins/

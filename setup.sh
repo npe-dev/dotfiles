@@ -45,22 +45,59 @@ info "🫖 Setting up Homebrew..."
 source "$HOME/dotfiles/setup/brew.sh"
 echo
 
+# Install Oh My Zsh
+info "🚀 Setting up Oh My Zsh..."
+source "$HOME/dotfiles/setup/oh-my-zsh.sh"
+echo
 
-### Another way to setup dotfiles
-# TODO Loop over each directory and execute install.sh script
-#
-# Run all dotfiles installers.
-# set -e
+# Install Starship
+info "✨ Setting up Starship..."
+source "$HOME/dotfiles/setup/starship.sh"
+echo
 
-# Get the absolute path of the main script
-#SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+# Install NVM
+info "📦 Setting up NVM..."
+source "$HOME/dotfiles/setup/nvm.sh"
+echo
 
-#echo $SCRIPT_DIR
-# Change to the main directory
-# cd "${SCRIPT_DIR}"
+# Optional: Install work-specific tools
+read -p "Do you want to install optional tools (aws-vault, lazygit, sops, etc.)? (y/N): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    info "🔧 Setting up optional tools..."
+    source "$HOME/dotfiles/setup/optional-tools.sh"
+    echo
+else
+    info "Skipping optional tools. You can run setup/optional-tools.sh later."
+    echo
+fi
 
-# Find all subdirectories and execute install.sh in each
-# find . -mindepth 1 -type d -exec sh -c 'cd "{}" && [ -e install.sh ] && sh install.sh' \;
+# Symlink dotfiles with Stow
+info "🔗 Creating symlinks with Stow..."
+cd "$HOME/dotfiles"
+if command -v stow &>/dev/null; then
+    # Remove existing symlinks to avoid conflicts
+    stow -D -t ~ zsh aws starship 2>/dev/null || true
+    # Create new symlinks
+    if stow -t ~ zsh aws starship > /dev/null 2>&1; then
+        success "Dotfiles symlinked successfully!"
+    else
+        error "Failed to create symlinks with Stow"
+        error "Run manually: cd ~/dotfiles && stow -t ~ zsh aws starship"
+        exit 1
+    fi
+else
+    error "Stow not found! Please install stow first."
+    exit 1
+fi
+echo
+
+# Create config file if it doesn't exist
+if [ ! -f "$HOME/dotfiles/config" ]; then
+    info "Creating config file from template..."
+    cp "$HOME/dotfiles/config.example" "$HOME/dotfiles/config"
+    warning "Please edit ~/dotfiles/config to set your environment variables"
+fi
 
 echo
 success "All done! Open a new terminal for the changes to take effect."
