@@ -46,7 +46,7 @@ fi
 # UPDATE HOMEBREW
 # ───────────────────────────────────────────────
 info "Updating Homebrew..."
-brew update
+brew update > /dev/null 2>&1
 
 # ───────────────────────────────────────────────
 # INSTALL PACKAGES
@@ -78,6 +78,6 @@ success "All packages installed!"
 # CLEANUP
 # ───────────────────────────────────────────────
 info "Cleaning up..."
-brew cleanup
+brew cleanup > /dev/null 2>&1
 
 success "Homebrew setup complete!"

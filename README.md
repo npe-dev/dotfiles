@@ -33,10 +33,14 @@ cd ~/dotfiles
 
 The setup script will:
 1. Request sudo access for system-level changes
-2. Set up Zsh as your default shell
+2. Set up Zsh as your default shell and install fzf-tab plugin
 3. Install Homebrew and essential packages
-4. Configure Oh My Zsh and plugins
-5. Set up symlinks using GNU Stow
+4. Install and configure Oh My Zsh with zsh-autosuggestions plugin
+5. Install Starship prompt
+6. Install NVM (Node Version Manager) and Node.js LTS
+7. Optionally install work-specific tools (aws-vault, lazygit, sops, etc.)
+8. Create symlinks using GNU Stow for zsh, aws, and starship configurations
+9. Create a config file from template for environment variables
 
 ### Manual Installation with Stow
 
@@ -50,27 +54,55 @@ stow -t ~ zsh aws starship
 stow -D -t ~ zsh
 ```
 
+### Individual Setup Scripts
+
+You can also run individual setup scripts if you only need specific components:
+
+```bash
+# Install Homebrew and core packages
+./setup/brew.sh
+
+# Install Oh My Zsh and plugins
+./setup/oh-my-zsh.sh
+
+# Install Starship prompt
+./setup/starship.sh
+
+# Install NVM and Node.js
+./setup/nvm.sh
+
+# Install optional work tools
+./setup/optional-tools.sh
+
+# Setup Zsh shell and fzf-tab
+./zsh/setup/zsh.sh
+```
+
 ## Repository Structure
 
 ```
 .
-├── aws/              # AWS CLI configuration
+├── aws/                      # AWS CLI configuration
 │   └── .aws/
 │       └── config
-├── setup/            # Installation scripts
-│   └── brew.sh      # Homebrew and package installation
-├── starship/         # Starship prompt configuration
+├── setup/                    # Installation scripts
+│   ├── brew.sh              # Homebrew and package installation
+│   ├── oh-my-zsh.sh         # Oh My Zsh and plugins
+│   ├── starship.sh          # Starship prompt installer
+│   ├── nvm.sh               # NVM and Node.js installer
+│   └── optional-tools.sh    # Optional work-specific tools
+├── starship/                 # Starship prompt configuration
 │   └── starship.toml
-├── zsh/              # Zsh configuration
+├── zsh/                      # Zsh configuration
 │   ├── .zsh-includes/
 │   │   ├── aliases.zsh      # Custom aliases
 │   │   └── functions.zsh    # Custom functions
-│   ├── .zshrc              # Main Zsh configuration
-│   ├── config.example      # Example environment variables
+│   ├── .zshrc               # Main Zsh configuration
+│   ├── config.example       # Example environment variables
 │   └── setup/
-│       └── zsh.sh          # Zsh setup script
-├── config.example    # Global configuration example
-├── setup.sh         # Main setup script
+│       └── zsh.sh           # Zsh shell and fzf-tab setup
+├── config.example            # Global configuration example
+├── setup.sh                  # Main setup script (orchestrates all)
 └── README.md
 ```
 
@@ -115,32 +147,48 @@ The Starship configuration (`starship/starship.toml`) includes:
 
 ### Installed Tools
 
-The `setup/brew.sh` script installs the following packages:
+**Core Packages** (`setup/brew.sh`):
 
-**File Management & Navigation:**
-- `yazi` - Terminal file manager
-- `zoxide` - Smarter cd command
-- `fzf` - Fuzzy finder
+- **File Management & Navigation:**
+  - `yazi` - Terminal file manager
+  - `zoxide` - Smarter cd command
+  - `fzf` - Fuzzy finder
+- **Development Tools:**
+  - `git` - Version control
+  - `stow` - Symlink manager for dotfiles
+  - `jq` - JSON processor
+- **Search & Text Processing:**
+  - `ripgrep` - Fast grep alternative
+  - `fd` - Fast find alternative
+- **Media & Documents:**
+  - `ffmpeg` - Video/audio processing
+  - `imagemagick` - Image manipulation
+  - `resvg` - SVG rendering
+  - `poppler` - PDF utilities
+- **Utilities:**
+  - `curl`, `wget` - File download tools
+  - `sevenzip` - Archive utility
+  - `font-symbols-only-nerd-font` - Icon font for terminal
 
-**Development Tools:**
-- `git` - Version control
-- `stow` - Symlink manager for dotfiles
-- `jq` - JSON processor
+**Shell & Prompt** (`setup/oh-my-zsh.sh`, `setup/starship.sh`):
 
-**Search & Text Processing:**
-- `ripgrep` - Fast grep alternative
-- `fd` - Fast find alternative
+- `oh-my-zsh` - Zsh framework
+- `zsh-autosuggestions` - Command suggestions plugin
+- `fzf-tab` - Fuzzy completion plugin
+- `starship` - Cross-shell prompt
 
-**Media & Documents:**
-- `ffmpeg` - Video/audio processing
-- `imagemagick` - Image manipulation
-- `resvg` - SVG rendering
-- `poppler` - PDF utilities
+**Runtime Managers** (`setup/nvm.sh`):
 
-**Utilities:**
-- `curl`, `wget` - File download tools
-- `sevenzip` - Archive utility
-- `font-symbols-only-nerd-font` - Icon font for terminal
+- `nvm` - Node Version Manager
+- `node` - Node.js LTS version
+
+**Optional Tools** (`setup/optional-tools.sh`):
+
+- `aws-vault` - AWS credential manager
+- `awscli` - AWS command line interface
+- `lazygit` - Terminal UI for git
+- `colorls` - Enhanced ls with icons (requires Ruby)
+- `sops` - Secrets encryption tool
 
 ## Custom Aliases
 

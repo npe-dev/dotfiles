@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Oh My Zsh setup script
-# Install Oh My Zsh and essential plugins
+# NVM setup script
+# Install Node Version Manager (NVM)
 #
 # Author: Nikolay Petrov
 # License: MIT
@@ -25,28 +25,27 @@ warning() { echo "${YELLOW}${BOLD}[WARN]${RESET} $*"; }
 error()   { echo "${RED}${BOLD}[ERR ]${RESET} $*" >&2; }
 
 # ───────────────────────────────────────────────
-# INSTALL OH MY ZSH
+# INSTALL NVM
 # ───────────────────────────────────────────────
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    info "Installing Oh My Zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null 2>&1
-    success "Oh My Zsh installed!"
+if [ ! -d "$HOME/.nvm" ]; then
+    info "Installing NVM..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh 2>/dev/null | bash > /dev/null 2>&1
+
+    # Load NVM for this session
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+    success "NVM installed!"
+
+    # Install latest LTS version of Node.js
+    if command -v nvm &>/dev/null; then
+        info "Installing Node.js LTS..."
+        nvm install --lts > /dev/null 2>&1
+        nvm use --lts > /dev/null 2>&1
+        success "Node.js LTS installed!"
+    fi
 else
-    success "Oh My Zsh already installed"
+    success "NVM already installed"
 fi
 
-# ───────────────────────────────────────────────
-# INSTALL ZSH-AUTOSUGGESTIONS PLUGIN
-# ───────────────────────────────────────────────
-ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
-AUTOSUGGESTIONS_DIR="$ZSH_CUSTOM/plugins/zsh-autosuggestions"
-
-if [ ! -d "$AUTOSUGGESTIONS_DIR" ]; then
-    info "Installing zsh-autosuggestions plugin..."
-    git clone --quiet https://github.com/zsh-users/zsh-autosuggestions "$AUTOSUGGESTIONS_DIR" > /dev/null 2>&1
-    success "zsh-autosuggestions installed!"
-else
-    success "zsh-autosuggestions already installed"
-fi
-
-success "Oh My Zsh setup complete!"
+success "NVM setup complete!"
