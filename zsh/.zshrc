@@ -28,7 +28,7 @@ CASE_SENSITIVE="false" # I think it was false before
 # COMPLETION_WAITING_DOTS="true"
 
 # Plugins
-plugins=(git sudo zsh-autosuggestions)
+plugins=(git sudo kubectl zsh-autosuggestions)
 source $ZSH/oh-my-zsh.sh
 # Cache eval outputs for faster startup
 _cache_eval() {
@@ -41,13 +41,6 @@ _cache_eval() {
 }
 
 _cache_eval "starship.zsh" "starship init zsh"
-
-# Lazy-load kubectl completions (removed from oh-my-zsh plugins for speed)
-kubectl() {
-  unfunction kubectl
-  source <(command kubectl completion zsh)
-  command kubectl "$@"
-}
 
 zstyle ':omz:update' mode auto
 # zstyle ':fzf-tab:*' complete-with-space false
