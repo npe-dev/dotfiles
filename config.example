@@ -9,3 +9,6 @@ export AWS_ACCOUNT_DRP=""
 
 # AWS Vault profiles that need credentials (space-separated)
 export AWS_VAULT_PROFILES=""
+
+# EKS clusters to register (alias:region:cluster-name:vault-profile, space-separated)
+export AWS_EKS_CLUSTERS=""

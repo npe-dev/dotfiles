@@ -88,3 +88,34 @@ for profile in $AWS_VAULT_PROFILES; do
         aws-vault add "$profile"
     fi
 done
+
+# ───────────────────────────────────────────────
+# EKS KUBECONFIG SETUP
+# ───────────────────────────────────────────────
+if ! command -v aws &>/dev/null; then
+    warning "AWS CLI not installed. Skipping EKS kubeconfig setup."
+    exit 0
+fi
+
+if [[ -z "$AWS_EKS_CLUSTERS" ]]; then
+    warning "No AWS_EKS_CLUSTERS defined in config. Skipping kubeconfig setup."
+    exit 0
+fi
+
+info "Registering EKS clusters..."
+for entry in $AWS_EKS_CLUSTERS; do
+    IFS=':' read -r alias region cluster profile <<< "$entry"
+
+    if kubectl config get-contexts -o name 2>/dev/null | grep -qx "$alias"; then
+        success "kubectl context '$alias' already exists"
+        continue
+    fi
+
+    info "Adding EKS cluster '$cluster' as context '$alias'..."
+    aws-vault exec "$profile" -- aws eks update-kubeconfig \
+        --region "$region" \
+        --name "$cluster" \
+        --alias "$alias" && \
+        success "Registered context '$alias'" || \
+        error "Failed to register context '$alias'"
+done

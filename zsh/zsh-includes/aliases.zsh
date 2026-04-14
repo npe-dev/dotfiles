@@ -19,6 +19,7 @@ alias prodkube="kubectl config use-context prod"
 alias uskube="kubectl config use-context prod-us"
 alias cakube="kubectl config use-context prod-ca"
 alias chkube="kubectl config use-context prod-ch"
+alias drpkube="kubectl config use-context prod-drp"
 
 # Docker compose shortcuts
 alias dcd="docker compose down"
