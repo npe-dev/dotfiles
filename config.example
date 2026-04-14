@@ -1,3 +1,8 @@
 export CURRENT_CLIENT="Something"
 export CURRENT_APP="something"
 export CLIENT_ROOT="$HOME/$CURRENT_CLIENT"
+
+# AWS Account IDs
+export AWS_ACCOUNT_INFRA=""
+export AWS_ACCOUNT_PROD=""
+export AWS_ACCOUNT_DRP=""
