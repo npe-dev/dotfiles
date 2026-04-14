@@ -65,3 +65,26 @@ info "Generating AWS config..."
 mkdir -p "$HOME/.aws"
 envsubst < "$TEMPLATE" > "$TARGET"
 success "AWS config generated at $TARGET"
+
+# ───────────────────────────────────────────────
+# AWS-VAULT SETUP
+# ───────────────────────────────────────────────
+if ! command -v aws-vault &>/dev/null; then
+    warning "aws-vault not installed. Run setup/optional-tools.sh first."
+    exit 0
+fi
+
+if [[ -z "$AWS_VAULT_PROFILES" ]]; then
+    warning "No AWS_VAULT_PROFILES defined in config. Skipping vault setup."
+    exit 0
+fi
+
+for profile in $AWS_VAULT_PROFILES; do
+    if aws-vault list 2>/dev/null | grep -q "$profile.*$profile"; then
+        success "aws-vault credentials already exist for $profile"
+    else
+        info "Adding aws-vault credentials for $profile..."
+        info "You will be prompted for your AWS Access Key ID and Secret Access Key."
+        aws-vault add "$profile"
+    fi
+done
