@@ -11,8 +11,8 @@ DOTFILES_DIR="$(realpath -- "$ZSHRC_DIR/..")"
 # Custom config to load global variables
 [[ -f "$DOTFILES_DIR/config" ]] && source "$DOTFILES_DIR/config"
 # Source all .zsh files in the same directory, excluding .zshrc
-for file in "$ZSHRC_DIR"/.zsh-includes/*.zsh(.N); do
-  [[ "$file" != "$ZSHRC_DIR/.zsh-includes/.zshrc" ]] && source "$file"
+for file in "$ZSHRC_DIR"/zsh-includes/*.zsh(.N); do
+  [[ "$file" != "$ZSHRC_DIR/zsh-includes/.zshrc" ]] && source "$file"
 done
 
 # Path to your oh-my-zsh installation.
@@ -89,3 +89,7 @@ alias peon="bash /Users/npe/.claude/hooks/peon-ping/peon.sh"
     zcompile "$zcompdump"
   fi
 } &!
+export PATH="$HOME/.local/bin:$PATH"
+
+# OpenClaw Completion
+source "/Users/npe/.openclaw/completions/openclaw.zsh"

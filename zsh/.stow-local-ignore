@@ -1,4 +1,4 @@
-\.zsh-plugins
-\.zsh-includes
+zsh-plugins
+zsh-includes
 config\.example
 setup
