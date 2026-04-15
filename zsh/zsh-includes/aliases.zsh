@@ -11,6 +11,7 @@ alias gte="cd $CLIENT_ROOT/evaluation"
 
 # Kubernetes aliases
 alias kk="k9s"
+alias kgy="kubectl get -o yaml"
 
 # # Clusters alias
 alias testkube="kubectl config use-context test"
