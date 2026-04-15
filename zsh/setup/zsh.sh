@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-
 current_shell=$(basename "$SHELL")
 zsh_path=$(command -v zsh)
 

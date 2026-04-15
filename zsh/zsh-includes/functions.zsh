@@ -157,31 +157,56 @@ purgeCache() {
     cd -
 }
 
+kube() {
+    local contexts
+    contexts=($(kubectl config get-contexts -o name 2>/dev/null))
+
+    if [[ ${#contexts[@]} -eq 0 ]]; then
+        echo "No kubectl contexts found."
+        return 1
+    fi
+
+    if [[ -n "$1" ]]; then
+        if printf '%s\n' "${contexts[@]}" | grep -qx "$1"; then
+            kubectl config use-context "$1"
+        else
+            echo "Context '$1' not found. Available clusters:"
+            printf '  %s\n' "${contexts[@]}"
+        fi
+        return
+    fi
+
+    local current
+    current=$(kubectl config current-context 2>/dev/null)
+
+    echo "Available clusters:"
+    for ctx in "${contexts[@]}"; do
+        if [[ "$ctx" == "$current" ]]; then
+            echo "  * $ctx (active)"
+        else
+            echo "    $ctx"
+        fi
+    done
+}
+
 aws-vault() {
+    if [[ "$1" == "exec" && -z "$2" ]]; then
+        echo "Available profiles:"
+        command aws-vault list 2>/dev/null | awk 'NR>2 {print "  " $1}'
+        return 0
+    fi
+
     if [[ "$1" == "exec" ]]; then
         local new_profile="$2"
 
-        # If AWS_VAULT is already set and trying to switch to different profile
-        if [[ -n "$AWS_VAULT" && "$AWS_VAULT" != "$new_profile" ]]; then
-            echo "🔄 Switching from $AWS_VAULT to $new_profile..."
-            unset AWS_VAULT
-            unset AWS_REGION
-            unset AWS_DEFAULT_REGION
-            unset AWS_ACCESS_KEY_ID
-            unset AWS_SECRET_ACCESS_KEY
-            unset AWS_SESSION_TOKEN
-            unset AWS_SECURITY_TOKEN
-            unset AWS_CREDENTIAL_EXPIRATION
-        elif [[ -n "$AWS_VAULT" && "$AWS_VAULT" == "$new_profile" ]]; then
-            echo "⚠️  Already in $AWS_VAULT context. Refreshing..."
-            unset AWS_VAULT
-            unset AWS_REGION
-            unset AWS_DEFAULT_REGION
-            unset AWS_ACCESS_KEY_ID
-            unset AWS_SECRET_ACCESS_KEY
-            unset AWS_SESSION_TOKEN
-            unset AWS_SECURITY_TOKEN
-            unset AWS_CREDENTIAL_EXPIRATION
+        if [[ -n "$AWS_VAULT" ]]; then
+            [[ "$AWS_VAULT" == "$new_profile" ]] \
+                && echo "Already in $AWS_VAULT context. Refreshing..." \
+                || echo "Switching from $AWS_VAULT to $new_profile..."
+            unset AWS_VAULT AWS_REGION AWS_DEFAULT_REGION \
+                  AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY \
+                  AWS_SESSION_TOKEN AWS_SECURITY_TOKEN \
+                  AWS_CREDENTIAL_EXPIRATION
         fi
     fi
 
