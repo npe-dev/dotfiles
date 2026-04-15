@@ -90,6 +90,3 @@ alias peon="bash /Users/npe/.claude/hooks/peon-ping/peon.sh"
   fi
 } &!
 export PATH="$HOME/.local/bin:$PATH"
-
-# OpenClaw Completion
-source "/Users/npe/.openclaw/completions/openclaw.zsh"
