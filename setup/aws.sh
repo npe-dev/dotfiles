@@ -52,9 +52,9 @@ if [[ ! -f "$TEMPLATE" ]]; then
     exit 1
 fi
 
-if [[ -z "$AWS_ACCOUNT_INFRA" || -z "$AWS_ACCOUNT_PROD" || -z "$AWS_ACCOUNT_DRP" ]]; then
+if [[ -z "$AWS_ACCOUNT_INFRA" || -z "$AWS_ACCOUNT_PROD" || -z "$AWS_ACCOUNT_DRP" || -z "$AWS_ACCOUNT_STAGING" ]]; then
     error "Missing AWS account variables in config."
-    error "Ensure AWS_ACCOUNT_INFRA, AWS_ACCOUNT_PROD, and AWS_ACCOUNT_DRP are set."
+    error "Ensure AWS_ACCOUNT_INFRA, AWS_ACCOUNT_PROD, AWS_ACCOUNT_DRP, and AWS_ACCOUNT_STAGING are set."
     exit 1
 fi
 
