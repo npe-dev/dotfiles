@@ -12,3 +12,11 @@ export AWS_VAULT_PROFILES=""
 
 # EKS clusters to register (alias:region:cluster-name:vault-profile, space-separated)
 export AWS_EKS_CLUSTERS=""
+
+# Claude Code Bedrock profile (used by claude_use in functions.zsh)
+export CLAUDE_BEDROCK_VAULT_PROFILE="my-bedrock-profile"
+export CLAUDE_BEDROCK_REGION="us-east-1"
+export CLAUDE_BEDROCK_MODEL="global.anthropic.claude-opus-4-x-v1:0"
+export CLAUDE_BEDROCK_OPUS_MODEL="global.anthropic.claude-opus-4-x-v1:0"
+export CLAUDE_BEDROCK_SONNET_MODEL="global.anthropic.claude-sonnet-4-x-v1:0"
+export CLAUDE_BEDROCK_HAIKU_MODEL="global.anthropic.claude-haiku-4-x-v1:0"

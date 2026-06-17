@@ -212,3 +212,57 @@ aws-vault() {
 
     command aws-vault "$@"
 }
+
+# Switch between Claude Code subscription profiles (bedrock vs session)
+# Patches ~/.claude/settings.json — restart Claude Code after switching.
+claude_use() {
+    local SETTINGS="$HOME/.claude/settings.json"
+    local ACTIVE_FILE="$HOME/.claude/active-profile"
+    local profile="${1:-}"
+
+    if [ -z "$profile" ]; then
+        local current=""
+        [ -f "$ACTIVE_FILE" ] && current=$(cat "$ACTIVE_FILE")
+        echo "Active profile: ${current:-unknown}"
+        echo "Usage: claude_use [bedrock|session]"
+        return 0
+    fi
+
+    case "$profile" in
+        bedrock)
+            if [ -z "$CLAUDE_BEDROCK_VAULT_PROFILE" ]; then
+                echo "Error: CLAUDE_BEDROCK_VAULT_PROFILE is not set (see config / config.example)."
+                return 1
+            fi
+            local cred_export="aws-vault exec ${CLAUDE_BEDROCK_VAULT_PROFILE} --json | jq '{Credentials: {AccessKeyId: .AccessKeyId, SecretAccessKey: .SecretAccessKey, SessionToken: .SessionToken}}'"
+            jq --arg ce "$cred_export" \
+               --arg region "$CLAUDE_BEDROCK_REGION" \
+               --arg model "$CLAUDE_BEDROCK_MODEL" \
+               --arg opus "$CLAUDE_BEDROCK_OPUS_MODEL" \
+               --arg sonnet "$CLAUDE_BEDROCK_SONNET_MODEL" \
+               --arg haiku "$CLAUDE_BEDROCK_HAIKU_MODEL" '
+              .awsCredentialExport = $ce
+              | .env = {
+                  "CLAUDE_CODE_USE_BEDROCK": "1",
+                  "AWS_REGION": $region,
+                  "ANTHROPIC_MODEL": $model,
+                  "ANTHROPIC_DEFAULT_OPUS_MODEL": $opus,
+                  "ANTHROPIC_DEFAULT_SONNET_MODEL": $sonnet,
+                  "ANTHROPIC_DEFAULT_HAIKU_MODEL": $haiku
+                }
+            ' "$SETTINGS" > "${SETTINGS}.tmp" && mv "${SETTINGS}.tmp" "$SETTINGS"
+            echo "bedrock" > "$ACTIVE_FILE"
+            echo "Switched to: bedrock (aws-vault + Bedrock models)"
+            ;;
+        session)
+            jq 'del(.awsCredentialExport) | del(.env)' \
+                "$SETTINGS" > "${SETTINGS}.tmp" && mv "${SETTINGS}.tmp" "$SETTINGS"
+            echo "session" > "$ACTIVE_FILE"
+            echo "Switched to: session (Claude.ai subscription)"
+            ;;
+        *)
+            echo "Unknown profile: $profile (available: bedrock, session)"
+            return 1
+            ;;
+    esac
+}

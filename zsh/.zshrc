@@ -90,3 +90,10 @@ alias peon="bash /Users/npe/.claude/hooks/peon-ping/peon.sh"
   fi
 } &!
 export PATH="$HOME/.local/bin:$PATH"
+
+# bun completions
+[ -s "/Users/npe/.oh-my-zsh/completions/_bun" ] && source "/Users/npe/.oh-my-zsh/completions/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
