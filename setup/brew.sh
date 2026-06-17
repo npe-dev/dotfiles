@@ -64,6 +64,7 @@ brew install \
     ripgrep \
     fzf \
     zoxide \
+    neovim \
     resvg \
     imagemagick \
     font-symbols-only-nerd-font \

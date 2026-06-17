@@ -77,13 +77,13 @@ info "🔗 Creating symlinks with Stow..."
 cd "$HOME/dotfiles"
 if command -v stow &>/dev/null; then
     # Remove existing symlinks to avoid conflicts
-    stow -D -t ~ zsh aws starship 2>/dev/null || true
+    stow -D -t ~ zsh aws starship nvim 2>/dev/null || true
     # Create new symlinks
-    if stow -t ~ zsh aws starship > /dev/null 2>&1; then
+    if stow -t ~ zsh aws starship nvim > /dev/null 2>&1; then
         success "Dotfiles symlinked successfully!"
     else
         error "Failed to create symlinks with Stow"
-        error "Run manually: cd ~/dotfiles && stow -t ~ zsh aws starship"
+        error "Run manually: cd ~/dotfiles && stow -t ~ zsh aws starship nvim"
         exit 1
     fi
 else
