@@ -60,6 +60,8 @@ _cache_eval "fzf.zsh" "fzf --zsh"
 # EXPORTS
 export KUBECONFIG=~/.kube/config
 export LANG="en_US.UTF-8" # (updated)
+export EDITOR="nvim"
+export VISUAL="nvim"
 export PHP_CS_FIXER_IGNORE_ENV=1
 export GEM_HOME="$HOME/.gem"
 export PATH="/opt/homebrew/opt/mysql/bin:/opt/homebrew/opt/mysql-client/bin:/opt/homebrew/opt/ruby/bin:$GEM_HOME/bin:/usr/local/bin:/usr/local/sbin:~/bin:${KREW_ROOT:-$HOME/.krew}/bin:$PATH:/Users/npe/.gem/bin:/Users/npe/Library/Python/3.9/bin"
