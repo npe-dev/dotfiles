@@ -1,30 +1,19 @@
 #!/bin/bash
 #
-# Setup new macOS machine with all dotfiles
+# Setup a new machine with all dotfiles (cross-platform: macOS + Arch Linux)
 #
 # Author: Nikolay Petrov
 # License: MIT
 # https://github.com/npe-dev/dotfiles
 
+source "$HOME/dotfiles/setup/common.sh"
 
-# ───────────────────────────────────────────────
-# COLORS
-# ───────────────────────────────────────────────
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
-BLUE=$(tput setaf 4)
-BOLD=$(tput bold)
-RESET=$(tput sgr0)
-
-# ───────────────────────────────────────────────
-# PRINT HELPERS
-# ───────────────────────────────────────────────
-info()    { echo "${BLUE}${BOLD}[INFO]${RESET} $*"; }
-success() { echo "${GREEN}${BOLD}[ OK ]${RESET} $*"; }
-warning() { echo "${YELLOW}${BOLD}[WARN]${RESET} $*"; }
-error()   { echo "${RED}${BOLD}[ERR ]${RESET} $*" >&2; }
-
+info "Detected OS: ${OS_NAME}${DISTRO:+ ($DISTRO)} — package manager: ${PKG_MGR:-none}"
+if [[ "$OS_NAME" != "macos" && "$DISTRO" != "arch" ]]; then
+    warning "This setup is tested on macOS and Arch Linux only."
+    warning "On other systems some package installs may be skipped."
+fi
+echo
 
 # Ask for the password upfront
 warning "Activate sudo access"
@@ -35,14 +24,14 @@ else
     exit 1
 fi
 
-# Setup Zsh
-info "Setting up Zsh..."
-source "$HOME/dotfiles/zsh/setup/zsh.sh"
+# Install core packages (also syncs the package DB on Arch)
+info "📦 Setting up core packages..."
+source "$HOME/dotfiles/setup/packages.sh"
 echo
 
-# Install Homebrew and packages/apps
-info "🫖 Setting up Homebrew..."
-source "$HOME/dotfiles/setup/brew.sh"
+# Setup Zsh (installs zsh itself if missing, then makes it the default shell)
+info "Setting up Zsh..."
+source "$HOME/dotfiles/zsh/setup/zsh.sh"
 echo
 
 # Install Oh My Zsh
@@ -73,23 +62,10 @@ else
 fi
 
 # Symlink dotfiles with Stow
+# safe_stow backs up any pre-existing real files (e.g. the default ~/.zshrc
+# the Oh My Zsh installer writes) so the symlinks never conflict.
 info "🔗 Creating symlinks with Stow..."
-cd "$HOME/dotfiles"
-if command -v stow &>/dev/null; then
-    # Remove existing symlinks to avoid conflicts
-    stow -D -t ~ zsh aws starship nvim 2>/dev/null || true
-    # Create new symlinks
-    if stow -t ~ zsh aws starship nvim > /dev/null 2>&1; then
-        success "Dotfiles symlinked successfully!"
-    else
-        error "Failed to create symlinks with Stow"
-        error "Run manually: cd ~/dotfiles && stow -t ~ zsh aws starship nvim"
-        exit 1
-    fi
-else
-    error "Stow not found! Please install stow first."
-    exit 1
-fi
+safe_stow zsh aws starship nvim || exit 1
 echo
 
 # Create config file if it doesn't exist

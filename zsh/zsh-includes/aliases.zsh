@@ -1,7 +1,14 @@
 # Aliases
-alias ohmy="code ~/.zshrc"
-alias lls="colorls -la"
-alias ll="colorls"
+alias ohmy="${EDITOR:-vim} ~/.zshrc"
+
+# Prefer colorls when installed, otherwise fall back to a sensible ls
+if command -v colorls &>/dev/null; then
+  alias lls="colorls -la"
+  alias ll="colorls"
+else
+  alias lls="ls -la"
+  alias ll="ls -l"
+fi
 alias hints_display='vim $HOME/Dropbox/$CURRENT_CLIENT/hints.md'
 
 # Current client specifics

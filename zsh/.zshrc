@@ -64,7 +64,14 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 export PHP_CS_FIXER_IGNORE_ENV=1
 export GEM_HOME="$HOME/.gem"
-export PATH="/opt/homebrew/opt/mysql/bin:/opt/homebrew/opt/mysql-client/bin:/opt/homebrew/opt/ruby/bin:$GEM_HOME/bin:/usr/local/bin:/usr/local/sbin:~/bin:${KREW_ROOT:-$HOME/.krew}/bin:$PATH:/Users/npe/.gem/bin:/Users/npe/Library/Python/3.9/bin"
+
+# Cross-platform PATH additions
+export PATH="$GEM_HOME/bin:/usr/local/bin:/usr/local/sbin:$HOME/bin:${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+# macOS / Homebrew-specific PATH additions
+if [[ "$OSTYPE" == darwin* ]]; then
+  export PATH="/opt/homebrew/opt/mysql/bin:/opt/homebrew/opt/mysql-client/bin:/opt/homebrew/opt/ruby/bin:$PATH:$HOME/Library/Python/3.9/bin"
+fi
 
 # Lazy-load NVM (speeds up shell startup)
 export NVM_DIR="$HOME/.nvm"
@@ -78,11 +85,11 @@ node() { lazy_load_nvm && node "$@"; }
 npm() { lazy_load_nvm && npm "$@"; }
 npx() { lazy_load_nvm && npx "$@"; }
 
-export REPO_LOCATION="/Users/npe/Optimy"
+export REPO_LOCATION="$HOME/Optimy"
 
 # peon-ping quick controls
-alias peon="bash /Users/npe/.claude/hooks/peon-ping/peon.sh"
-[ -f /Users/npe/.claude/hooks/peon-ping/completions.bash ] && source /Users/npe/.claude/hooks/peon-ping/completions.bash
+alias peon="bash $HOME/.claude/hooks/peon-ping/peon.sh"
+[ -f "$HOME/.claude/hooks/peon-ping/completions.bash" ] && source "$HOME/.claude/hooks/peon-ping/completions.bash"
 
 # Compile zcompdump in background for faster startup
 {
@@ -94,7 +101,7 @@ alias peon="bash /Users/npe/.claude/hooks/peon-ping/peon.sh"
 export PATH="$HOME/.local/bin:$PATH"
 
 # bun completions
-[ -s "/Users/npe/.oh-my-zsh/completions/_bun" ] && source "/Users/npe/.oh-my-zsh/completions/_bun"
+[ -s "$HOME/.oh-my-zsh/completions/_bun" ] && source "$HOME/.oh-my-zsh/completions/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
