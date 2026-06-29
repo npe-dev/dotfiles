@@ -31,3 +31,7 @@ alias lg="lazygit"
 
 # Sops helper
 alias spf="sops-helper -f"
+
+
+# Nvim
+alias nv="nvim"
