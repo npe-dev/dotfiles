@@ -1,3 +1,20 @@
+# Cross-platform "copy to clipboard" (macOS pbcopy / Wayland / X11)
+_clip () {
+    if command -v pbcopy &>/dev/null; then
+        pbcopy
+    elif command -v wl-copy &>/dev/null; then
+        wl-copy
+    elif command -v xclip &>/dev/null; then
+        xclip -selection clipboard
+    elif command -v xsel &>/dev/null; then
+        xsel --clipboard --input
+    else
+        cat > /dev/null
+        echo "(no clipboard tool found — install wl-clipboard or xclip)" >&2
+        return 1
+    fi
+}
+
 ss () {
     PPWD=$PWD
     cd "$CLIENT_ROOT/docker-$CURRENT_APP" && ./stack "$@"
@@ -10,7 +27,7 @@ bf () {
     echo
     encoded=$(echo -n "$input" | base64)
     echo "$encoded"
-    echo -n "$encoded" | pbcopy
+    echo -n "$encoded" | _clip
     echo "(Copied to clipboard)"
 }
 
@@ -25,7 +42,7 @@ obf () {
 
     encoded=$(echo -n "$input" | base64)
     echo "$encoded"
-    echo -n "$encoded" | pbcopy
+    echo -n "$encoded" | _clip
     echo "(Copied to clipboard)"
 }
 
@@ -40,7 +57,7 @@ unobf () {
 
     if decoded=$(echo -n "$input" | base64 -d 2>/dev/null); then
         echo "$decoded"
-        echo -n "$decoded" | pbcopy
+        echo -n "$decoded" | _clip
         echo "(Copied to clipboard)"
     else
         echo "Error: Invalid base64 input."

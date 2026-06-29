@@ -1,6 +1,8 @@
 # NPE-DEV Dotfiles
 
-Personal dotfiles configuration for macOS development environment. This repository contains configurations for Zsh, Starship prompt, Kubernetes tools, AWS CLI, and various development utilities.
+Personal, cross-platform dotfiles for **macOS and Arch Linux** development environments. This repository contains configurations for Zsh, Starship prompt, Kubernetes tools, AWS CLI, and various development utilities.
+
+The setup scripts detect the OS and use the appropriate package manager automatically: **Homebrew** on macOS, **pacman/AUR** on Arch Linux.
 
 ## Features
 
@@ -15,10 +17,13 @@ Personal dotfiles configuration for macOS development environment. This reposito
 
 ## Requirements
 
-- **macOS** (tested on macOS 10.15+)
-- **Homebrew** (automatically installed by setup script)
-- **Zsh** (automatically installed via Homebrew)
+- **macOS** (tested on macOS 10.15+) **or Arch Linux**
+- **Package manager**:
+  - macOS: **Homebrew** (automatically installed by the setup script)
+  - Arch Linux: **pacman** (built-in) and an **AUR helper** — `yay` or `paru` — for a few packages (`aws-vault`, `resvg`)
+- **Zsh** (installed automatically — via Homebrew on macOS, pacman on Arch)
 - **Git** (for cloning and managing dotfiles)
+- **Clipboard tool** (Linux only, for the `bf`/`obf`/`unobf` helpers): `wl-clipboard` (Wayland) or `xclip`/`xsel` (X11)
 
 ## Quick Start
 
@@ -34,14 +39,15 @@ cd ~/dotfiles
 
 The setup script will:
 1. Request sudo access for system-level changes
-2. Set up Zsh as your default shell and install fzf-tab plugin
-3. Install Homebrew and essential packages
-4. Install and configure Oh My Zsh with zsh-autosuggestions plugin
-5. Install Starship prompt
-6. Install NVM (Node Version Manager) and Node.js LTS
-7. Optionally install work-specific tools (aws-vault, lazygit, sops, etc.)
-8. Create symlinks using GNU Stow for zsh, aws, and starship configurations
-9. Create a config file from template for environment variables
+2. Detect your OS and select the package manager (Homebrew on macOS, pacman/AUR on Arch)
+3. Install core packages (and on macOS, install Homebrew itself first)
+4. Set up Zsh (installing it if missing) as your default shell and install the fzf-tab plugin
+5. Install and configure Oh My Zsh with the zsh-autosuggestions plugin
+6. Install the Starship prompt
+7. Install NVM (Node Version Manager) and Node.js LTS
+8. Optionally install work-specific tools (aws-vault, lazygit, sops, etc.)
+9. Create symlinks using GNU Stow for the zsh, aws, starship, and nvim configs
+10. Create a config file from template for environment variables
 
 ### Manual Installation with Stow
 
@@ -60,8 +66,8 @@ stow -D -t ~ zsh
 You can also run individual setup scripts if you only need specific components:
 
 ```bash
-# Install Homebrew and core packages
-./setup/brew.sh
+# Install core packages (Homebrew on macOS / pacman+AUR on Arch)
+./setup/packages.sh
 
 # Install Oh My Zsh and plugins
 ./setup/oh-my-zsh.sh
@@ -110,14 +116,16 @@ You can also run individual setup scripts if you only need specific components:
 │           └── plugins/
 │               └── colorscheme.lua  # Catppuccin (starter plugin spec)
 ├── setup/                    # Installation scripts
-│   ├── brew.sh              # Homebrew and package installation
+│   ├── common.sh            # Shared helpers: OS detection + cross-platform pkg install
+│   ├── packages.sh          # Core package installation (Homebrew / pacman+AUR)
 │   ├── oh-my-zsh.sh         # Oh My Zsh and plugins
 │   ├── starship.sh          # Starship prompt installer
 │   ├── nvm.sh               # NVM and Node.js installer
 │   ├── optional-tools.sh    # Optional work-specific tools
 │   └── aws.sh               # Generate ~/.aws/config + aws-vault/EKS setup
-├── starship/                 # Starship prompt configuration
-│   └── starship.toml
+├── starship/                 # Starship prompt configuration (Stow package)
+│   └── .config/
+│       └── starship.toml    # Stow-linked to ~/.config/starship.toml
 ├── zsh/                      # Zsh configuration
 │   ├── zsh-includes/
 │   │   ├── aliases.zsh      # Custom aliases
@@ -222,7 +230,7 @@ return {
 
 ### Installed Tools
 
-**Core Packages** (`setup/brew.sh`):
+**Core Packages** (`setup/packages.sh`):
 
 - **File Management & Navigation:**
   - `yazi` - Terminal file manager
@@ -340,10 +348,15 @@ Oh My Zsh auto-updates are enabled. Manual update:
 omz update
 ```
 
-### Updating Homebrew packages
+### Updating packages
 
 ```bash
+# macOS
 brew update && brew upgrade && brew cleanup
+
+# Arch Linux
+sudo pacman -Syu          # official repos
+yay -Syu                  # repos + AUR
 ```
 
 ### Adding new Zsh configurations
@@ -372,13 +385,20 @@ ls -la ~/.zshrc
 # Should point to ~/dotfiles/zsh/.zshrc
 ```
 
-### Homebrew installation fails
+### Package installation fails
 
-Check Xcode Command Line Tools:
+- **macOS** — check Xcode Command Line Tools:
 
-```bash
-xcode-select --install
-```
+  ```bash
+  xcode-select --install
+  ```
+
+- **Arch Linux** — make sure an AUR helper is installed (needed for `aws-vault`, `resvg`):
+
+  ```bash
+  sudo pacman -S --needed git base-devel
+  git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+  ```
 
 ### Starship not showing
 
@@ -386,7 +406,8 @@ Verify Starship is installed and initialized:
 
 ```bash
 which starship
-# Should output: /opt/homebrew/bin/starship (or similar)
+# macOS:  /opt/homebrew/bin/starship (or similar)
+# Arch:   /usr/bin/starship
 ```
 
 Check that `eval "$(starship init zsh)"` is present in `.zshrc`.

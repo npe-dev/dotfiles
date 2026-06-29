@@ -1,29 +1,13 @@
 #!/bin/bash
 #
-# Optional tools setup script
-# Install work-specific and optional development tools
-# These are not required for basic functionality
+# Optional tools setup script (cross-platform)
+# Install work-specific and optional development tools.
+# These are not required for basic functionality.
 #
 # Author: Nikolay Petrov
 # License: MIT
 
-# ───────────────────────────────────────────────
-# COLORS
-# ───────────────────────────────────────────────
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
-BLUE=$(tput setaf 4)
-BOLD=$(tput bold)
-RESET=$(tput sgr0)
-
-# ───────────────────────────────────────────────
-# PRINT HELPERS
-# ───────────────────────────────────────────────
-info()    { echo "${BLUE}${BOLD}[INFO]${RESET} $*"; }
-success() { echo "${GREEN}${BOLD}[ OK ]${RESET} $*"; }
-warning() { echo "${YELLOW}${BOLD}[WARN]${RESET} $*"; }
-error()   { echo "${RED}${BOLD}[ERR ]${RESET} $*" >&2; }
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
 
 warning "This script installs optional work-specific tools."
 warning "Skip this if you don't need AWS, PHP, or other optional tools."
@@ -32,45 +16,37 @@ echo
 # ───────────────────────────────────────────────
 # AWS TOOLS
 # ───────────────────────────────────────────────
-if ! command -v aws-vault &>/dev/null; then
-    info "Installing aws-vault..."
-    brew install aws-vault
-    success "aws-vault installed!"
+# aws-vault lives in the AUR on Arch, Homebrew on macOS.
+if is_arch; then
+    pkg_install aws-vault aws-vault aws-vault --aur
 else
-    success "aws-vault already installed"
+    pkg_install aws-vault aws-vault
 fi
 
-if ! command -v aws &>/dev/null; then
-    info "Installing AWS CLI..."
-    brew install awscli
-    success "AWS CLI installed!"
-else
-    success "AWS CLI already installed"
-fi
+# AWS CLI: brew name "awscli", Arch package "aws-cli-v2".
+pkg_install aws awscli aws-cli-v2
 
 # ───────────────────────────────────────────────
 # GIT TOOLS
 # ───────────────────────────────────────────────
-if ! command -v lazygit &>/dev/null; then
-    info "Installing lazygit..."
-    brew install lazygit
-    success "lazygit installed!"
-else
-    success "lazygit already installed"
-fi
+pkg_install lazygit lazygit
 
 # ───────────────────────────────────────────────
 # FILE LISTING TOOLS
 # ───────────────────────────────────────────────
 if ! command -v colorls &>/dev/null; then
     info "Installing colorls..."
-    # colorls requires Ruby
+    # colorls is a Ruby gem on every platform
     if command -v gem &>/dev/null; then
-        gem install colorls > /dev/null 2>&1
-        success "colorls installed!"
+        gem install colorls > /dev/null 2>&1 && success "colorls installed!" \
+            || warning "colorls install failed (check Ruby/gem setup)."
     else
         warning "Ruby/gem not found. Skipping colorls installation."
-        info "Install Ruby first: brew install ruby"
+        if is_arch; then
+            info "Install Ruby first: sudo pacman -S ruby"
+        else
+            info "Install Ruby first: brew install ruby"
+        fi
     fi
 else
     success "colorls already installed"
@@ -89,12 +65,6 @@ fi
 # ───────────────────────────────────────────────
 # SECRETS MANAGEMENT
 # ───────────────────────────────────────────────
-if ! command -v sops &>/dev/null; then
-    info "Installing sops (secrets encryption)..."
-    brew install sops
-    success "sops installed!"
-else
-    success "sops already installed"
-fi
+pkg_install sops sops
 
 success "Optional tools setup complete!"

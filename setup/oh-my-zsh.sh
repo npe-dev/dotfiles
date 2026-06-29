@@ -1,35 +1,22 @@
 #!/bin/bash
 #
-# Oh My Zsh setup script
+# Oh My Zsh setup script (cross-platform: works on macOS and Linux)
 # Install Oh My Zsh and essential plugins
 #
 # Author: Nikolay Petrov
 # License: MIT
 
-# ───────────────────────────────────────────────
-# COLORS
-# ───────────────────────────────────────────────
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
-BLUE=$(tput setaf 4)
-BOLD=$(tput bold)
-RESET=$(tput sgr0)
-
-# ───────────────────────────────────────────────
-# PRINT HELPERS
-# ───────────────────────────────────────────────
-info()    { echo "${BLUE}${BOLD}[INFO]${RESET} $*"; }
-success() { echo "${GREEN}${BOLD}[ OK ]${RESET} $*"; }
-warning() { echo "${YELLOW}${BOLD}[WARN]${RESET} $*"; }
-error()   { echo "${RED}${BOLD}[ERR ]${RESET} $*" >&2; }
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
 
 # ───────────────────────────────────────────────
 # INSTALL OH MY ZSH
 # ───────────────────────────────────────────────
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     info "Installing Oh My Zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended > /dev/null 2>&1
+    # --keep-zshrc: never replace an existing ~/.zshrc (e.g. our stow symlink).
+    # On a truly fresh machine OMZ still writes a default ~/.zshrc here; the
+    # later safe_stow step backs that up automatically before linking ours.
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc > /dev/null 2>&1
     success "Oh My Zsh installed!"
 else
     success "Oh My Zsh already installed"

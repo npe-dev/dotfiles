@@ -1,28 +1,12 @@
 #!/bin/bash
 #
-# NVM setup script
+# NVM setup script (cross-platform: works on macOS and Linux)
 # Install Node Version Manager (NVM)
 #
 # Author: Nikolay Petrov
 # License: MIT
 
-# ───────────────────────────────────────────────
-# COLORS
-# ───────────────────────────────────────────────
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
-BLUE=$(tput setaf 4)
-BOLD=$(tput bold)
-RESET=$(tput sgr0)
-
-# ───────────────────────────────────────────────
-# PRINT HELPERS
-# ───────────────────────────────────────────────
-info()    { echo "${BLUE}${BOLD}[INFO]${RESET} $*"; }
-success() { echo "${GREEN}${BOLD}[ OK ]${RESET} $*"; }
-warning() { echo "${YELLOW}${BOLD}[WARN]${RESET} $*"; }
-error()   { echo "${RED}${BOLD}[ERR ]${RESET} $*" >&2; }
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
 
 # ───────────────────────────────────────────────
 # INSTALL NVM
