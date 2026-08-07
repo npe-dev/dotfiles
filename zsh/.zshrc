@@ -85,7 +85,7 @@ node() { lazy_load_nvm && node "$@"; }
 npm() { lazy_load_nvm && npm "$@"; }
 npx() { lazy_load_nvm && npx "$@"; }
 
-export REPO_LOCATION="$HOME/Optimy"
+export REPO_LOCATION="$HOME/$CURRENT_CLIENT"
 
 # peon-ping quick controls
 alias peon="bash $HOME/.claude/hooks/peon-ping/peon.sh"
@@ -106,3 +106,6 @@ export PATH="$HOME/.local/bin:$PATH"
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# claude Code shortcut
+alias oc='cd $HOME/$CURRENT_CLIENT && claude'
