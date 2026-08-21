@@ -108,4 +108,4 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 # claude Code shortcut
-alias oc='cd $HOME/$CURRENT_CLIENT && claude'
+alias cc='cd $HOME/$CURRENT_CLIENT && claude'

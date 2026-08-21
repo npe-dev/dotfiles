@@ -72,7 +72,7 @@ pstan() {
     vendor/bin/phpstan analyse --memory-limit=-1 "$1"
 }
 
-cc() {
+gg() {
     git fetch
     ticket_link="$1"
     ticket_identifier=$(echo "$ticket_link" | sed -E 's/^.*\/([A-Z]+-[0-9]+).*/\1/')
