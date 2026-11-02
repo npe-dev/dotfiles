@@ -1,106 +1,22 @@
-# Get editor completions based on the config schema
-"$schema" = 'https://starship.rs/config-schema.json'
+# Omachy Starship prompt — Catppuccin Mocha palette
 
-
-# Inserts a blank line between shell prompts
-add_newline = false # idk what is this it was true
-
-# Custom format with kubernetes and aws on the left
 format = """
-$kubernetes$aws$cmd_duration$line_break\
-[└─](bold green)$directory$git_branch$git_status$php$nodejs$python$golang$rust$java
+$directory\
+$git_branch\
+$git_status\
 $character"""
 
-# Replace the '❯' symbol in the prompt with '➜'
-[character] # The name of the module we are configuring is 'character'
-success_symbol = '[➜](bold green) ' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
-
-# =========================
-# KUBERNETES MODULE
-# =========================
-[kubernetes]
-disabled = false
-symbol = "☸️ "
-# Show context, namespace, and user
-format = '[┌─](bold green)$symbol[$context]($style)[\($namespace\)](bold yellow) '
-style = "red"
-# Only show when aws-vault session is active
-detect_env_vars = ['AWS_VAULT']
-
-# =========================
-# AWS MODULE
-# =========================
-[aws]
-disabled = false
-symbol = ""
-# Remove region from display
-format = '[$symbol($profile )]($style)'
-style = "bold blue"
-
-# Optional aliases
-[aws.region_aliases]
-ap-southeast-2 = 'au'
-us-east-1 = 'va'
-
-[aws.profile_aliases]
-CompanyGroupFrobozzOnCallAccess = 'Frobozz'
-
-# =========================
-# CMD DURATION MODULE
-# =========================
-[cmd_duration]
-min_time = 500
-format = ' took [$duration]($style)'
-style = 'bold yellow'
+[directory]
+style = "bold #89b4fa"
+truncation_length = 3
 
 [git_branch]
-symbol = ''
-truncation_length = 50
-truncation_symbol = '...'
-format = 'on [$symbol$branch(:$remote_branch)]($style) '
+symbol = " "
+style = "bold #a6e3a1"
 
 [git_status]
-conflicted = '!'
-ahead = '⇡'
-behind = '⇣'
-diverged = '⇕'
-up_to_date = '✓'
-untracked = '?'
-stashed = '\$'
-modified = '*'
-staged = '+'
-renamed = '»'
-deleted = '✘'
+style = "bold #f9e2af"
 
-[directory]
-truncation_length = 3       # show only last 3 path components
-truncation_symbol = "…"
-truncate_to_repo = false
-read_only = " "
-
-# =========================
-# LANGUAGE VERSION MODULES
-# =========================
-[php]
-symbol = "🐘 "
-format = ' via [$symbol($version)]($style)'
-
-[nodejs]
-symbol = "⬢ "
-format = ' via [$symbol($version)]($style)'
-
-[python]
-symbol = "🐍 "
-format = ' via [$symbol($version)]($style)'
-
-[golang]
-symbol = "🐹 "
-format = ' via [$symbol($version)]($style)'
-
-[rust]
-symbol = "🦀 "
-format = ' via [$symbol($version)]($style)'
-
-[java]
-symbol = "☕ "
-format = ' via [$symbol($version)]($style)'
+[character]
+success_symbol = "[❯](bold #89b4fa)"
+error_symbol = "[❯](bold #f38ba8)"

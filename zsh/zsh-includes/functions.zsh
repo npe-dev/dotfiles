@@ -21,16 +21,6 @@ ss () {
     cd "$PPWD"
 }
 
-bf () {
-    print -n "Enter the string to encode: "
-    read -s input
-    echo
-    encoded=$(echo -n "$input" | base64)
-    echo "$encoded"
-    echo -n "$encoded" | _clip
-    echo "(Copied to clipboard)"
-}
-
 obf () {
     if [[ -n "$1" ]]; then
         input="$1"

@@ -109,3 +109,4 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # claude Code shortcut
 alias cc='cd $HOME/$CURRENT_CLIENT && claude'
+
