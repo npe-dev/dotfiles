@@ -196,6 +196,22 @@ kube() {
     done
 }
 
+# Shell into the first Running app-back-deployment pod (container app-back).
+# Usage: kback [extra kubectl args, e.g. -n <namespace>]
+kback() {
+    local pod
+    pod=$(kubectl get pods "$@" --no-headers 2>/dev/null \
+        | grep app-back-deployment | grep Running | awk 'NR==1{print $1}')
+
+    if [[ -z "$pod" ]]; then
+        echo "No Running app-back-deployment pod found (context: $(kubectl config current-context 2>/dev/null))."
+        return 1
+    fi
+
+    echo "Exec into $pod"
+    kubectl exec -it "$@" "$pod" -c app-back -- bash
+}
+
 aws-vault() {
     if [[ "$1" == "exec" && -z "$2" ]]; then
         echo "Available profiles:"
@@ -272,4 +288,23 @@ claude_use() {
             return 1
             ;;
     esac
+}
+
+# Open an aws-vault session matching the current kubectl context (infra vs prod).
+awsauth() {
+    local current_context
+    current_context=$(kubectl config current-context 2>/dev/null)
+
+    if [[ -z "$current_context" ]]; then
+        echo "Error: No kubectl context found"
+        return 1
+    fi
+
+    if [[ "$current_context" == *infra* ]]; then
+        echo "Detected infra cluster, using infra profile"
+        aws-vault exec infra
+    else
+        echo "Detected non-infra cluster ($current_context), using prod profile"
+        aws-vault exec prod
+    fi
 }

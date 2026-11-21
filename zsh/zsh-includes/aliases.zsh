@@ -18,6 +18,7 @@ alias gte="cd $CLIENT_ROOT/evaluation"
 
 # Kubernetes aliases
 alias kk="k9s"
+alias kc="kubectl"
 alias kgy="kubectl get -o yaml"
 
 # # Clusters alias
@@ -35,6 +36,9 @@ alias dcu="docker compose up -d"
 
 # Lazygit
 alias lg="lazygit"
+
+# Lazydocker
+alias lzd="lazydocker"
 
 # Sops helper
 alias spf="sops-helper -f"
