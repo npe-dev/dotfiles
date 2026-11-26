@@ -333,8 +333,8 @@ Functions defined in `zsh/zsh-includes/functions.zsh`:
 - **`purgeCache()`**: Clear the app's twig/mustache/translator caches
 - **`kube()`**: List kubectl contexts or switch to one by name
 - **`kback()`**: Exec into the first Running `app-back-deployment` pod (container `app-back`); extra args go to kubectl, e.g. `kback -n <namespace>`
-- **`awsauth()`**: Open an `aws-vault exec` session matching the current kubectl context (`infra` profile for contexts containing "infra", otherwise `prod`)
-- **`aws-vault()`**: Wrapper that lists profiles and resets env on `exec` re-auth
+- **`awsauth()`**: Open an `aws-vault exec` session matching the current kubectl context (`infra` profile for contexts containing "infra", otherwise `prod`, also when no context is set); extra args pass through, e.g. `awsauth --duration 8h` or `awsauth -- kubectl get pods`
+- **`aws-vault()`**: Wrapper that lists profiles on bare `exec`; inside a session, an interactive `exec` replaces the current subshell (no nesting) and `exec <profile> -- cmd` runs with fresh creds without clearing the current shell's session
 - **`claude_use()`**: Switch Claude Code between `bedrock` and `session` profiles
 
 ## Kubernetes Integration

@@ -212,28 +212,66 @@ kback() {
     kubectl exec -it "$@" "$pod" -c app-back -- bash
 }
 
+# Wrapper around aws-vault:
+#  - `aws-vault exec` with no profile lists the available profiles.
+#  - Inside an existing session, `aws-vault exec <profile>` (interactive)
+#    replaces the current subshell instead of nesting a new one.
+#  - Inside an existing session, `aws-vault exec <profile> -- cmd` runs cmd
+#    with fresh credentials without touching the current shell's env.
 aws-vault() {
-    if [[ "$1" == "exec" && -z "$2" ]]; then
+    if [[ "$1" != "exec" ]]; then
+        command aws-vault "$@"
+        return
+    fi
+
+    # Find the profile (first positional arg after `exec`, skipping flags and
+    # their values) and whether a command / non-shell mode was requested.
+    local profile="" arg skip_next=0 interactive=1
+    for arg in "${@:2}"; do
+        if (( skip_next )); then skip_next=0; continue; fi
+        case "$arg" in
+            --) interactive=0; break ;;
+            -d|--duration|--region|-t|--mfa-token|--prompt|--backend) skip_next=1 ;;
+            -j|--json|-s|--server|--ec2-server|--ecs-server|--stdout) interactive=0 ;;
+            -*) ;;
+            *)
+                if [[ -z "$profile" ]]; then
+                    profile="$arg"
+                else
+                    interactive=0; break   # `exec <profile> cmd ...` without --
+                fi
+                ;;
+        esac
+    done
+
+    if [[ -z "$profile" ]]; then
         echo "Available profiles:"
         command aws-vault list 2>/dev/null | awk 'NR>2 {print "  " $1}'
         return 0
     fi
 
-    if [[ "$1" == "exec" ]]; then
-        local new_profile="$2"
-
-        if [[ -n "$AWS_VAULT" ]]; then
-            [[ "$AWS_VAULT" == "$new_profile" ]] \
-                && echo "Already in $AWS_VAULT context. Refreshing..." \
-                || echo "Switching from $AWS_VAULT to $new_profile..."
-            unset AWS_VAULT AWS_REGION AWS_DEFAULT_REGION \
-                  AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY \
-                  AWS_SESSION_TOKEN AWS_SECURITY_TOKEN \
-                  AWS_CREDENTIAL_EXPIRATION
-        fi
+    # Not inside a session: nothing to clean up.
+    if [[ -z "$AWS_VAULT" ]]; then
+        command aws-vault "$@"
+        return
     fi
 
-    command aws-vault "$@"
+    local -a aws_vars=(AWS_VAULT AWS_REGION AWS_DEFAULT_REGION
+                       AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+                       AWS_SESSION_TOKEN AWS_SECURITY_TOKEN
+                       AWS_CREDENTIAL_EXPIRATION)
+
+    if (( interactive )); then
+        [[ "$AWS_VAULT" == "$profile" ]] \
+            && echo "Already in $AWS_VAULT context. Refreshing..." \
+            || echo "Switching from $AWS_VAULT to $profile..."
+        unset "${aws_vars[@]}"
+        # Replace this aws-vault subshell rather than stacking another one.
+        exec aws-vault "$@"
+    else
+        # One-off command: clear vars only for the child, keep this shell's session.
+        ( unset "${aws_vars[@]}"; command aws-vault "$@" )
+    fi
 }
 
 # Switch between Claude Code subscription profiles (bedrock vs session)
@@ -291,20 +329,25 @@ claude_use() {
 }
 
 # Open an aws-vault session matching the current kubectl context (infra vs prod).
+# Extra args are passed through, e.g. `awsauth --duration 8h` or `awsauth -- kubectl get pods`.
 awsauth() {
-    local current_context
+    local current_context profile
     current_context=$(kubectl config current-context 2>/dev/null)
 
     if [[ -z "$current_context" ]]; then
-        echo "Error: No kubectl context found"
-        return 1
-    fi
-
-    if [[ "$current_context" == *infra* ]]; then
+        echo "No kubectl context found, defaulting to prod profile"
+        profile=prod
+    elif [[ "$current_context" == *infra* ]]; then
         echo "Detected infra cluster, using infra profile"
-        aws-vault exec infra
+        profile=infra
     else
         echo "Detected non-infra cluster ($current_context), using prod profile"
-        aws-vault exec prod
+        profile=prod
     fi
+
+    # Flags before the profile, `--` and anything after it stay after.
+    local -a flags=() rest=()
+    while (( $# )) && [[ "$1" != "--" ]]; do flags+=("$1"); shift; done
+    rest=("$@")
+    aws-vault exec "${flags[@]}" "$profile" "${rest[@]}"
 }
